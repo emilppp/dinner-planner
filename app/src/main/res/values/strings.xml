@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">DinnerPlanner</string>
-    <string name="hello_world">Hello frida!</string>
+    <string name="app_name">Dinner Planner</string>
     <string name="action_settings">Settings</string>
+    <string name="welcomeText">Welcome to Dinner Planner!\nHere you will be able to easily plan your dinner.\nOn the next page start by selecting number of participants.\nThen select your courses.\n\nWatch Magic Happen!</string>
+    <string name="welcomeBtn">Start</string>
+    <string name="participantsText">Participants</string>
+    <string name="totalCostText">Total cost:</string>
+    <string name="chooseMenuText">Choose Menu</string>
+    <string name="starterText">Starter</string>
+    <string name="mainCourseText">Main Course</string>
+    <string name="dessertsText">Dessert</string>
 
 
 </resources>
