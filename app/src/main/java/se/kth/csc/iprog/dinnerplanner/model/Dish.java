@@ -13,14 +13,17 @@ public class Dish {
 	int type; // starter (1), main (2) or desert (3)  
 	String image;
 	String description;
+	int imageId;
+	public boolean marked = false;
 	
 	Set<Ingredient> ingredients = new HashSet<Ingredient>();
 	
-	public Dish(String name, int type, String image, String description) {
+	public Dish(String name, int type, String image, String description, int imageId) {
 		this.name = name;
 		this.type = type;
 		this.image = image;
 		this.description = description;
+		this.imageId = imageId;
 	}
 	
 	public String getName() {
@@ -38,6 +41,7 @@ public class Dish {
 	public String getImage() {
 		return image;
 	}
+	public int getImageId() { return imageId; }
 	public void setImage(String image) {
 		this.image = image;
 	}
@@ -70,6 +74,16 @@ public class Dish {
 			}
 		}
 		return false;
+	}
+
+	public int getCost() {
+		int sum = 0;
+		Set<Ingredient> ing = getIngredients();
+		for(Ingredient i : ing) {
+			sum += i.getPrice();
+
+		}
+		return sum;
 	}
 
 }

@@ -11,6 +11,10 @@
     <string name="starterText">Starter</string>
     <string name="mainCourseText">Main Course</string>
     <string name="dessertsText">Dessert</string>
+    <string name="createBtn">Create</string>
+    <string name="chooseBtn">Choose</string>
+    <string name="toastText">Toast</string>
+    <string name="cost">Cost</string>
 
 
 </resources>
