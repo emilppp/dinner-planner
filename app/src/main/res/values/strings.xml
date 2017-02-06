@@ -15,6 +15,14 @@
     <string name="chooseBtn">Choose</string>
     <string name="toastText">Toast</string>
     <string name="cost">Cost</string>
+    <string name="_0">0</string>
+    <string name="ingredientsText">Ingredients</string>
+    <string name="instructionsText">Instructions</string>
+    <string name="persText">0 pers</string>
+    <string name="ingredientsList">wololo</string>
+    <string name="typeOfCourse">Starter</string>
+    <string name="nameOfCourse">Crostini</string>
+    <string name="instructionDesc">hej hEJE hej hej eje hehj\\n hejejhe</string>
 
 
 </resources>

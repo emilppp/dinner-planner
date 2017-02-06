@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/totalCostSum"
             android:layout_gravity="bottom"
-            android:text="0"/>
+            android:text="@string/_0"/>
 
     </LinearLayout>
 

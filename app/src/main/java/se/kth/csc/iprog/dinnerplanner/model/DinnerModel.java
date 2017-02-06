@@ -1,5 +1,6 @@
 package se.kth.csc.iprog.dinnerplanner.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -214,6 +215,17 @@ public class DinnerModel implements IDinnerModel{
 
 		}
 		return sum;
+	}
+
+	public ArrayList<Dish> getSelected() {
+			ArrayList<Dish> result = new ArrayList<>();
+			for(Dish d : dishes){
+				if(d.marked){
+					result.add(d);
+				}
+			}
+
+		return result;
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package se.kth.csc.iprog.dinnerplanner.android;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import se.kth.csc.iprog.dinnerplanner.model.DinnerModel;
 import se.kth.csc.iprog.dinnerplanner.model.Dish;
@@ -80,10 +83,13 @@ public class MenuActivity extends Activity {
         recyclerViewDessert.setAdapter(dessertAdapter);
 
         Button create = (Button) findViewById(R.id.createBtn);
+
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setContentView(R.layout.activity_main);
+                Intent intent = new Intent(MenuActivity.this, OverviewActivity.class);
+                intent.putExtra("selectedList", getSelected());
+                startActivity(intent);
             }
         });
 
@@ -97,5 +103,9 @@ public class MenuActivity extends Activity {
     }
     private Object[] getDesserts() {
         return  model.getDishesOfType(Dish.DESERT).toArray();
+    }
+
+    private ArrayList<Dish> getSelected() {
+         return model.getSelected();
     }
 }

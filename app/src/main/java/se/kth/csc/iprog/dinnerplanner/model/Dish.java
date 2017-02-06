@@ -1,14 +1,18 @@
 package se.kth.csc.iprog.dinnerplanner.model;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Dish {
+public class Dish implements Serializable {
 	
 	public static final int STARTER = 1;
 	public static final int MAIN = 2;
 	public static final int DESERT = 3;
-	
+
+	private static final long serialVersionUID = 465234234;
+
+
 	String name;
 	int type; // starter (1), main (2) or desert (3)  
 	String image;
