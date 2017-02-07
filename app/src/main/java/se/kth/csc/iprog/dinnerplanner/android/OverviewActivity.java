@@ -7,12 +7,18 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 
+import org.w3c.dom.Text;
+
+import java.util.Set;
+
+import se.kth.csc.iprog.dinnerplanner.model.DinnerModel;
 import se.kth.csc.iprog.dinnerplanner.model.Dish;
+import se.kth.csc.iprog.dinnerplanner.model.Ingredient;
 
 
 public class OverviewActivity extends Activity {
@@ -23,6 +29,7 @@ public class OverviewActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         // Default call to load previous state
         super.onCreate(savedInstanceState);
+        final DinnerModel model = ((DinnerPlannerApplication) this.getApplication()).getModel();
 
         // Set the view for the main activity screen
         // it must come before any call to findViewById method
@@ -44,14 +51,58 @@ public class OverviewActivity extends Activity {
 
         courses.setLayoutManager(linearLayoutManager);
 
-        Intent intent = getIntent();
-        Bundle args = intent.getBundleExtra("selectedList");
-        ArrayList<Dish> selected = (ArrayList<Dish>) args.getSerializable("selectedList");
+        ingredientImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
-        MenuAdapter menuAdapter = new MenuAdapter(this, selected.toArray());
+                changeView(R.layout.ingredients_view);
+
+                Set<Ingredient> ingredients = model.getAllIngredients();
+                final StringBuilder sb = new StringBuilder();
+                TextView ingredientsList = (TextView) findViewById(R.id.ingredientsList);
+                for(Ingredient i : ingredients) {
+                    sb.append(i.getName()+" "+i.getQuantity()+" "+i.getUnit()+"\n");
+                }
+                ingredientsList.setText(sb);
+            }
+        });
+
+
+
+        Object[] selected = model.getSelected().toArray();
+
+        MenuAdapter menuAdapter = new MenuAdapter(this, selected){
+            @Override
+            protected void onClickImage(ViewHolder holder, Dish dish) {
+                super.onClickImage(holder, dish);
+                changeView(R.layout.instruction_view);
+
+                TextView courseType = (TextView) findViewById(R.id.typeOfCourse);
+                TextView nameOfCourse = (TextView) findViewById(R.id.nameOfCourse);
+                TextView courseDescr = (TextView) findViewById(R.id.instructionDesc);
+
+                courseType.setText(dish.getTypeName());
+                nameOfCourse.setText(dish.getName());
+                courseDescr.setText(dish.getDescription());
+
+            }
+        };
         courses.setAdapter(menuAdapter);
 
 
+
+
+
+
+    }
+
+    private void changeView(int id) {
+        View view = findViewById(R.id.in);
+        ViewGroup parent = (ViewGroup) view.getParent();
+        int index = parent.indexOfChild(view);
+        parent.removeView(view);
+        view = getLayoutInflater().inflate(id, parent, false);
+        parent.addView(view, index);
     }
 
 }

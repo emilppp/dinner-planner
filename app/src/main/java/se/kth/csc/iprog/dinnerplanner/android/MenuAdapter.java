@@ -101,49 +101,52 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
         holder.item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    if(!holder.dish.marked) {
-                        final Dialog dialog = new Dialog(activity);
-                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                        dialog.setContentView(R.layout.choose_menu_dialog);
-
-
-                        final Spinner s = (Spinner) activity.findViewById(R.id.spinner);
-                        final int p = (int) s.getSelectedItem();
-                        ((TextView) dialog.findViewById(R.id.itemTitle)).setText(
-                                 "Cost: " + (p * dish.getCost()) + "\n" + dish.getCost() + " per person"
-
-                        );
-
-                        final TextView b = (TextView) activity.findViewById(R.id.totalCostSum);
-
-                        String costString = b.getText().toString();
-                        final int totCost = Integer.parseInt(costString);
-
-
-
-                        dialog.findViewById(R.id.chooseBtn).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                holder.item.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_red_dark));
-                                holder.getTextView().setTextColor(Color.WHITE);
-                                holder.dish.marked = true;
-
-
-                                b.setText("" + (totCost + p * dish.getCost()));
-
-                                dialog.dismiss();
-                            }
-                        });
-                        dialog.show();
-                    }
-                else {
-                       // holder.item.setBackgroundColor(Color.WHITE);// holder.getTextView().setTextColor(Color.BLACK);
-                    }
-
+                onClickImage(holder, dish);
             }
         });
 
+
     }
+    protected void onClickImage(final ViewHolder holder, final Dish dish) {
+        if(!holder.dish.marked) {
+            final Dialog dialog = new Dialog(activity);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.choose_menu_dialog);
+
+
+            final Spinner s = (Spinner) activity.findViewById(R.id.spinner);
+            final int p = (int) s.getSelectedItem();
+            ((TextView) dialog.findViewById(R.id.itemTitle)).setText(
+                    "Cost: " + (p * dish.getCost()) + "\n" + dish.getCost() + " per person"
+
+            );
+
+            final TextView b = (TextView) activity.findViewById(R.id.totalCostSum);
+
+            String costString = b.getText().toString();
+            final int totCost = Integer.parseInt(costString);
+
+            dialog.findViewById(R.id.chooseBtn).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    holder.item.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_red_dark));
+                    holder.getTextView().setTextColor(Color.WHITE);
+                    holder.dish.marked = true;
+
+
+                    b.setText("" + (totCost + p * dish.getCost()));
+
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+        }
+        else {
+            // holder.item.setBackgroundColor(Color.WHITE);// holder.getTextView().setTextColor(Color.BLACK);
+        }
+
+    }
+
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override

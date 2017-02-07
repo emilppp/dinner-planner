@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 
 import se.kth.csc.iprog.dinnerplanner.model.DinnerModel;
 import se.kth.csc.iprog.dinnerplanner.model.Dish;
@@ -23,13 +22,15 @@ import se.kth.csc.iprog.dinnerplanner.model.Dish;
  */
 
 public class MenuActivity extends Activity {
-    DinnerModel model = new DinnerModel();
-    int previous = 1;
 
+    int previous = 1;
+    DinnerModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        model = ((DinnerPlannerApplication) this.getApplication()).getModel();
 
         setContentView(R.layout.choose_menu);
         getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -88,7 +89,6 @@ public class MenuActivity extends Activity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MenuActivity.this, OverviewActivity.class);
-                intent.putExtra("selectedList", getSelected());
                 startActivity(intent);
             }
         });
@@ -105,7 +105,5 @@ public class MenuActivity extends Activity {
         return  model.getDishesOfType(Dish.DESERT).toArray();
     }
 
-    private ArrayList<Dish> getSelected() {
-         return model.getSelected();
-    }
+
 }

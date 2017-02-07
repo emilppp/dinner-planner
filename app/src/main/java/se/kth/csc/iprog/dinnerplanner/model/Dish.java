@@ -39,6 +39,15 @@ public class Dish implements Serializable {
 	public int getType() {
 		return type;
 	}
+	public String getTypeName() {
+		int type = getType();
+
+		if(type == STARTER) return "Starter";
+		if(type == MAIN) return "Main";
+
+		return "Dessert";
+
+	}
 	public void setType(int type) {
 		this.type = type;
 	}
