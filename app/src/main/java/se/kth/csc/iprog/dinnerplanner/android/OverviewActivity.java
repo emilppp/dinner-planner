@@ -11,9 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
-import org.w3c.dom.Text;
-
 import java.util.Set;
 
 import se.kth.csc.iprog.dinnerplanner.model.DinnerModel;
@@ -24,13 +21,13 @@ import se.kth.csc.iprog.dinnerplanner.model.Ingredient;
 public class OverviewActivity extends Activity {
 
 
-
+    Intent intent = null;
+    DinnerModel model;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Default call to load previous state
         super.onCreate(savedInstanceState);
-        final DinnerModel model = ((DinnerPlannerApplication) this.getApplication()).getModel();
-
+        model = ((DinnerPlannerApplication) this.getApplication()).getModel();
         // Set the view for the main activity screen
         // it must come before any call to findViewById method
         setContentView(R.layout.overview_view);
@@ -38,32 +35,28 @@ public class OverviewActivity extends Activity {
         getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getActionBar().setCustomView(R.layout.titlebar);
 
+        intent = getIntent();
+        TextView totCost = (TextView) findViewById(R.id.totalCost);
+        totCost.setText(intent.getStringExtra("totCost").toString());
+
+
+
         View ingredientsButton = findViewById(R.id.ingredient_button);
         ImageView ingredientImg = (ImageView) ingredientsButton.findViewById(R.id.testpic);
         ingredientImg.setImageResource(R.drawable.sourdough);
         TextView ingredientText = (TextView) ingredientsButton.findViewById(R.id.testtext);
         ingredientText.setText("Ingredients");
 
-
         RecyclerView courses = (RecyclerView) findViewById(R.id.recyclerViewIngredients);
-
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-
         courses.setLayoutManager(linearLayoutManager);
 
+        updateStuff();
         ingredientImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                changeView(R.layout.ingredients_view);
-
-                Set<Ingredient> ingredients = model.getAllIngredients();
-                final StringBuilder sb = new StringBuilder();
-                TextView ingredientsList = (TextView) findViewById(R.id.ingredientsList);
-                for(Ingredient i : ingredients) {
-                    sb.append(i.getName()+" "+i.getQuantity()+" "+i.getUnit()+"\n");
-                }
-                ingredientsList.setText(sb);
+                updateStuff();
             }
         });
 
@@ -88,12 +81,6 @@ public class OverviewActivity extends Activity {
             }
         };
         courses.setAdapter(menuAdapter);
-
-
-
-
-
-
     }
 
     private void changeView(int id) {
@@ -103,6 +90,22 @@ public class OverviewActivity extends Activity {
         parent.removeView(view);
         view = getLayoutInflater().inflate(id, parent, false);
         parent.addView(view, index);
+    }
+
+    private void updateStuff() {
+        changeView(R.layout.ingredients_view);
+
+        TextView participants = (TextView) findViewById(R.id.persText);
+        participants.setText(intent.getIntExtra("participants", 1) + " pers");
+
+        Set<Ingredient> ingredients = model.getSelectedIngredients();
+        final StringBuilder sb = new StringBuilder();
+        TextView ingredientsList = (TextView) findViewById(R.id.ingredientsList);
+        for(Ingredient i : ingredients) {
+            sb.append(i.getName()+" "+i.getQuantity()+" "+i.getUnit()+"\n");
+        }
+        ingredientsList.setText(sb);
+
     }
 
 }

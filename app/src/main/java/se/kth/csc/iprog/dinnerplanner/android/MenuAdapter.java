@@ -14,13 +14,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
-
-
-import org.w3c.dom.Text;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import se.kth.csc.iprog.dinnerplanner.model.Dish;
 
@@ -56,75 +49,48 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
         this.activity = a;
     }
 
-    private Set<Dish> getSelected() {
-        Set<Dish> v = new HashSet<>();
-        for(Object o : dataset) {
-            Dish s = (Dish) o;
-            if(s.marked) {
-                v.add(s);
-            }
-        }
-        return v;
-    }
-
-    private int countSelected() {
-        int sum = 0;
-        Set<Dish> b = getSelected();
-        for(Dish c : b) {
-            sum += c.getCost();
-        }
-        return sum;
-    }
-
 
 
     public MenuAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.menuitem, parent, false);
-
-
         ViewHolder vh = new ViewHolder(v);
-
         return vh;
-
     }
+
     @Override
     public void onBindViewHolder(final  ViewHolder holder, final int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-
         final Dish dish = (Dish) dataset[position];
         holder.dish = dish;
         holder.getTextView().setText(dish.getName());
         holder.getImageView().setImageResource(dish.getImageId());
-
         holder.item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onClickImage(holder, dish);
             }
         });
-
-
     }
+
     protected void onClickImage(final ViewHolder holder, final Dish dish) {
+        final TextView b = (TextView) activity.findViewById(R.id.totalCostSum);
+        final Spinner s = (Spinner) activity.findViewById(R.id.spinner);
+        final int p = (int) s.getSelectedItem();
+        final int[] totCost = new int[1];
+
         if(!holder.dish.marked) {
             final Dialog dialog = new Dialog(activity);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.choose_menu_dialog);
 
-
-            final Spinner s = (Spinner) activity.findViewById(R.id.spinner);
-            final int p = (int) s.getSelectedItem();
             ((TextView) dialog.findViewById(R.id.itemTitle)).setText(
                     "Cost: " + (p * dish.getCost()) + "\n" + dish.getCost() + " per person"
-
             );
 
-            final TextView b = (TextView) activity.findViewById(R.id.totalCostSum);
-
             String costString = b.getText().toString();
-            final int totCost = Integer.parseInt(costString);
+            totCost[0] = Integer.parseInt(costString);
 
             dialog.findViewById(R.id.chooseBtn).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -132,19 +98,24 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
                     holder.item.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_red_dark));
                     holder.getTextView().setTextColor(Color.WHITE);
                     holder.dish.marked = true;
-
-
-                    b.setText("" + (totCost + p * dish.getCost()));
-
+                    String costString = b.getText().toString();
+                    totCost[0] = Integer.parseInt(costString);
+                    b.setText("" + (totCost[0] + p * dish.getCost()));
                     dialog.dismiss();
                 }
             });
             dialog.show();
         }
         else {
-            // holder.item.setBackgroundColor(Color.WHITE);// holder.getTextView().setTextColor(Color.BLACK);
-        }
+            holder.dish.marked = false;
+            holder.item.setBackgroundColor(activity.getResources().getColor(android.R.color.white));
+            holder.getTextView().setTextColor(Color.BLACK);
+            String costString = b.getText().toString();
+            totCost[0] = Integer.parseInt(costString);
+            b.setText("" + (totCost[0] - p * dish.getCost()));
 
+
+        }
     }
 
 

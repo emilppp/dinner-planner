@@ -32,16 +32,16 @@ public class MenuActivity extends Activity {
 
         model = ((DinnerPlannerApplication) this.getApplication()).getModel();
 
+        // Title bar
         setContentView(R.layout.choose_menu);
         getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getActionBar().setCustomView(R.layout.titlebar);
 
+        // Guest drop down
         Spinner spinner = (Spinner) findViewById(R.id.spinner);
         Integer[] guests = new Integer[] {1, 2, 3, 4, 5, 6, 7, 8, 9};
-
         ArrayAdapter<Integer> arrayAdapter = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_item, guests);
         spinner.setAdapter(arrayAdapter);
-
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
@@ -61,6 +61,8 @@ public class MenuActivity extends Activity {
             }
         });
 
+
+        // Listview for the different courses
         RecyclerView recyclerViewStarter = (RecyclerView) findViewById(R.id.recyclerViewStarter);
         RecyclerView recyclerViewMain = (RecyclerView) findViewById(R.id.recyclerViewMainCourse);
         RecyclerView recyclerViewDessert = (RecyclerView) findViewById(R.id.recyclerViewDesserts);
@@ -73,11 +75,10 @@ public class MenuActivity extends Activity {
         recyclerViewMain.setLayoutManager(linearLayoutManagerMain);
         recyclerViewDessert.setLayoutManager(linearLayoutManagerDessert);
 
-
+        // Use menuadapters f
         MenuAdapter starterAdapter = new MenuAdapter(this, getStarters());
         MenuAdapter mainAdapter = new MenuAdapter(this, getMain());
         MenuAdapter dessertAdapter = new MenuAdapter(this, getDesserts());
-
 
         recyclerViewStarter.setAdapter(starterAdapter);
         recyclerViewMain.setAdapter(mainAdapter);
@@ -85,10 +86,15 @@ public class MenuActivity extends Activity {
 
         Button create = (Button) findViewById(R.id.createBtn);
 
+        // Go to overview
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                TextView costView = (TextView) findViewById(R.id.totalCostSum);
+                String costString = costView.getText().toString();
                 Intent intent = new Intent(MenuActivity.this, OverviewActivity.class);
+                intent.putExtra("participants", previous);
+                intent.putExtra("totCost", costString);
                 startActivity(intent);
             }
         });

@@ -206,6 +206,19 @@ public class DinnerModel implements IDinnerModel{
         return ingredients;
 	}
 
+	public Set<Ingredient> getSelectedIngredients() {
+		Set<Ingredient> ingredients = new HashSet<Ingredient>();
+		for(Dish d : dishes) {
+			if(d.marked) {
+				for (Ingredient i : d.getIngredients()) {
+					ingredients.add(i);
+				}
+			}
+		}
+
+		return ingredients;
+	}
+
 	@Override
 	public float getTotalMenuPrice() {
 		int sum = 0;

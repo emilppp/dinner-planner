@@ -27,6 +27,7 @@ public class MainActivity extends Activity {
 
         Button start = (Button) findViewById(R.id.welcomeBtn);
 
+        // Moves to next screen
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
