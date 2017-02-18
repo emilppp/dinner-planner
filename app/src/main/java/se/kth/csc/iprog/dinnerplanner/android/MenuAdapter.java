@@ -12,9 +12,10 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
+import se.kth.csc.iprog.dinnerplanner.model.AsyncData;
+import se.kth.csc.iprog.dinnerplanner.model.DinnerModel;
 import se.kth.csc.iprog.dinnerplanner.model.Dish;
 
 
@@ -75,44 +76,51 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
     }
 
     protected void onClickImage(final ViewHolder holder, final Dish dish) {
+        final DinnerModel model = ((DinnerPlannerApplication) activity.getApplication()).getModel();
         final TextView b = (TextView) activity.findViewById(R.id.totalCostSum);
-        final Spinner s = (Spinner) activity.findViewById(R.id.spinner);
-        final int p = (int) s.getSelectedItem();
-        final int[] totCost = new int[1];
+
+
 
         if(!holder.dish.marked) {
-            final Dialog dialog = new Dialog(activity);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setContentView(R.layout.choose_menu_dialog);
-
-            ((TextView) dialog.findViewById(R.id.itemTitle)).setText(
-                    "Cost: " + (p * dish.getCost()) + "\n" + dish.getCost() + " per person"
-            );
-
-            String costString = b.getText().toString();
-            totCost[0] = Integer.parseInt(costString);
-
-            dialog.findViewById(R.id.chooseBtn).setOnClickListener(new View.OnClickListener() {
+            model.fetchIngredients(dish, new AsyncData() {
                 @Override
-                public void onClick(View view) {
-                    holder.item.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_red_dark));
-                    holder.getTextView().setTextColor(Color.WHITE);
-                    holder.dish.marked = true;
-                    String costString = b.getText().toString();
-                    totCost[0] = Integer.parseInt(costString);
-                    b.setText("" + (totCost[0] + p * dish.getCost()));
-                    dialog.dismiss();
+                public void onData() {
+                    model.fetchInstructions(dish, new AsyncData() {
+                        @Override
+                        public void onData() {
+                            final Dialog dialog = new Dialog(activity);
+                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                            dialog.setContentView(R.layout.choose_menu_dialog);
+
+
+                            ((TextView) dialog.findViewById(R.id.itemTitle)).setText(
+                                    "Cost: " + (model.getNumberOfGuests() * dish.getCost()) + "\n" + dish.getCost() + " per person"
+                            );
+                            ((ImageView) dialog.findViewById(R.id.itemPic)).setImageResource(dish.getImageId());
+
+
+                            dialog.findViewById(R.id.chooseBtn).setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    model.addDishToMenu(holder.dish);
+                                    holder.item.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_red_dark));
+                                    holder.getTextView().setTextColor(Color.WHITE);
+                                    b.setText("" + (model.getTotalMenuPrice()));
+                                    dialog.dismiss();
+                                }
+                            });
+                            dialog.show();
+
+                        }
+                    });
                 }
             });
-            dialog.show();
-        }
-        else {
-            holder.dish.marked = false;
+
+        } else {
+            model.removeDishFromMenu(holder.dish);
             holder.item.setBackgroundColor(activity.getResources().getColor(android.R.color.white));
             holder.getTextView().setTextColor(Color.BLACK);
-            String costString = b.getText().toString();
-            totCost[0] = Integer.parseInt(costString);
-            b.setText("" + (totCost[0] - p * dish.getCost()));
+            b.setText("" + (model.getTotalMenuPrice()));
 
 
         }

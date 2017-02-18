@@ -10,7 +10,6 @@ public class Dish implements Serializable {
 	public static final int MAIN = 2;
 	public static final int DESERT = 3;
 
-	private static final long serialVersionUID = 465234234;
 
 
 	String name;
@@ -19,20 +18,25 @@ public class Dish implements Serializable {
 	String description;
 	int imageId;
 	public boolean marked = false;
-	
+	String id;
+	public boolean hasFetched = false;
+
 	Set<Ingredient> ingredients = new HashSet<Ingredient>();
-	
-	public Dish(String name, int type, String image, String description, int imageId) {
+
+	public Dish(String name, int type, String image, String description, int imageId, String id) {
 		this.name = name;
 		this.type = type;
 		this.image = image;
 		this.description = description;
 		this.imageId = imageId;
+		this.id = id;
+
 	}
-	
+
 	public String getName() {
 		return name;
 	}
+	public boolean hasFetched() { return hasFetched; }
 	public void setName(String name) {
 		this.name = name;
 	}

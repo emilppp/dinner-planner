@@ -2,7 +2,6 @@ package se.kth.csc.iprog.dinnerplanner.android;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +20,8 @@ import se.kth.csc.iprog.dinnerplanner.model.Ingredient;
 public class OverviewActivity extends Activity {
 
 
-    Intent intent = null;
+
+    String cost;
     DinnerModel model;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,10 +35,8 @@ public class OverviewActivity extends Activity {
         getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getActionBar().setCustomView(R.layout.titlebar);
 
-        intent = getIntent();
-        TextView totCost = (TextView) findViewById(R.id.totalCost);
-        totCost.setText(intent.getStringExtra("totCost").toString());
 
+        cost = model.getTotalMenuPrice() + "";
 
 
         View ingredientsButton = findViewById(R.id.ingredient_button);
@@ -51,6 +49,8 @@ public class OverviewActivity extends Activity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         courses.setLayoutManager(linearLayoutManager);
 
+        TextView costText = (TextView) findViewById(R.id.totalCost);
+        costText.setText(cost + "");
         updateStuff();
         ingredientImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,7 +67,6 @@ public class OverviewActivity extends Activity {
         MenuAdapter menuAdapter = new MenuAdapter(this, selected){
             @Override
             protected void onClickImage(ViewHolder holder, Dish dish) {
-                super.onClickImage(holder, dish);
                 changeView(R.layout.instruction_view);
 
                 TextView courseType = (TextView) findViewById(R.id.typeOfCourse);
@@ -96,7 +95,7 @@ public class OverviewActivity extends Activity {
         changeView(R.layout.ingredients_view);
 
         TextView participants = (TextView) findViewById(R.id.persText);
-        participants.setText(intent.getIntExtra("participants", 1) + " pers");
+        participants.setText(model.getNumberOfGuests() + " pers");
 
         Set<Ingredient> ingredients = model.getSelectedIngredients();
         final StringBuilder sb = new StringBuilder();

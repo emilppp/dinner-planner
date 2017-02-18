@@ -14,21 +14,23 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.entity.mime.Header;
 import se.kth.csc.iprog.dinnerplanner.model.DinnerModel;
 import se.kth.csc.iprog.dinnerplanner.model.Dish;
 
-/**
- * Created by emil on 2017-02-02.
- */
 
 public class MenuActivity extends Activity {
 
-    int previous = 1;
     DinnerModel model;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         model = ((DinnerPlannerApplication) this.getApplication()).getModel();
 
@@ -47,12 +49,10 @@ public class MenuActivity extends Activity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 TextView costView = (TextView) findViewById(R.id.totalCostSum);
-                String costString = costView.getText().toString();
-                int totCost = Integer.parseInt(costString);
-                totCost /= previous;
-                totCost *= (i+1);
-                costView.setText(totCost+"");
-                previous = i+1;
+
+                model.setNumberOfGuests(i+1);
+                System.out.println(model.getNumberOfGuests());
+                costView.setText(model.getTotalMenuPrice() * model.getNumberOfGuests() + "");
             }
 
             @Override
@@ -90,11 +90,7 @@ public class MenuActivity extends Activity {
         create.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TextView costView = (TextView) findViewById(R.id.totalCostSum);
-                String costString = costView.getText().toString();
                 Intent intent = new Intent(MenuActivity.this, OverviewActivity.class);
-                intent.putExtra("participants", previous);
-                intent.putExtra("totCost", costString);
                 startActivity(intent);
             }
         });
@@ -110,6 +106,7 @@ public class MenuActivity extends Activity {
     private Object[] getDesserts() {
         return  model.getDishesOfType(Dish.DESERT).toArray();
     }
+
 
 
 }
