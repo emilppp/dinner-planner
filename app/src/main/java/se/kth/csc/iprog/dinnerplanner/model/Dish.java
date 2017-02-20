@@ -1,5 +1,8 @@
 package se.kth.csc.iprog.dinnerplanner.model;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +23,7 @@ public class Dish implements Serializable {
 	public boolean marked = false;
 	String id;
 	public boolean hasFetched = false;
+	Bitmap bmp;
 
 	Set<Ingredient> ingredients = new HashSet<Ingredient>();
 
@@ -30,7 +34,6 @@ public class Dish implements Serializable {
 		this.description = description;
 		this.imageId = imageId;
 		this.id = id;
-
 	}
 
 	public String getName() {
@@ -101,6 +104,14 @@ public class Dish implements Serializable {
 
 		}
 		return sum;
+	}
+
+	public void setImageBitmap(Bitmap bmp) {
+		this.bmp = bmp;
+	}
+
+	public Bitmap getBitmap() {
+		return Bitmap.createScaledBitmap(bmp, 180, 180, false);
 	}
 
 }

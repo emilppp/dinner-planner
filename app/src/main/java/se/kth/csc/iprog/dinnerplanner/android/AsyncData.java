@@ -1,4 +1,4 @@
-package se.kth.csc.iprog.dinnerplanner.model;
+package se.kth.csc.iprog.dinnerplanner.android;
 
 /**
  * Created by emil on 2017-02-18.

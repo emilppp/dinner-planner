@@ -14,11 +14,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 
-import com.loopj.android.http.JsonHttpResponseHandler;
-
-import org.json.JSONObject;
-
-import cz.msebera.android.httpclient.entity.mime.Header;
 import se.kth.csc.iprog.dinnerplanner.model.DinnerModel;
 import se.kth.csc.iprog.dinnerplanner.model.Dish;
 
@@ -52,7 +47,7 @@ public class MenuActivity extends Activity {
 
                 model.setNumberOfGuests(i+1);
                 System.out.println(model.getNumberOfGuests());
-                costView.setText(model.getTotalMenuPrice() * model.getNumberOfGuests() + "");
+                costView.setText(model.getTotalMenuPrice()+ "");
             }
 
             @Override
@@ -75,14 +70,24 @@ public class MenuActivity extends Activity {
         recyclerViewMain.setLayoutManager(linearLayoutManagerMain);
         recyclerViewDessert.setLayoutManager(linearLayoutManagerDessert);
 
+
         // Use menuadapters f
-        MenuAdapter starterAdapter = new MenuAdapter(this, getStarters());
-        MenuAdapter mainAdapter = new MenuAdapter(this, getMain());
-        MenuAdapter dessertAdapter = new MenuAdapter(this, getDesserts());
+        final MenuAdapter starterAdapter = new MenuAdapter(this, getStarters());
+        final MenuAdapter mainAdapter = new MenuAdapter(this, getMain());
+        final MenuAdapter dessertAdapter = new MenuAdapter(this, getDesserts());
 
         recyclerViewStarter.setAdapter(starterAdapter);
         recyclerViewMain.setAdapter(mainAdapter);
         recyclerViewDessert.setAdapter(dessertAdapter);
+
+
+        model.setAdapters(starterAdapter, mainAdapter, dessertAdapter);
+        model.getRecipiesOfAllTypes(new AsyncData() {
+            @Override
+            public void onData() {
+
+            }
+        });
 
         Button create = (Button) findViewById(R.id.createBtn);
 

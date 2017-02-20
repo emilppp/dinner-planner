@@ -14,7 +14,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import se.kth.csc.iprog.dinnerplanner.model.AsyncData;
+import org.w3c.dom.Text;
+
 import se.kth.csc.iprog.dinnerplanner.model.DinnerModel;
 import se.kth.csc.iprog.dinnerplanner.model.Dish;
 
@@ -51,6 +52,15 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
     }
 
 
+    public void add(Dish a) {
+        Object[] b = new Object[dataset.length + 1];
+        for(int i=0; i<dataset.length; i++) {
+            b[i] = dataset[i];
+        }
+        b[dataset.length] = a;
+        dataset = b;
+        notifyDataSetChanged();
+    }
 
     public MenuAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
@@ -66,7 +76,7 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
         final Dish dish = (Dish) dataset[position];
         holder.dish = dish;
         holder.getTextView().setText(dish.getName());
-        holder.getImageView().setImageResource(dish.getImageId());
+        holder.getImageView().setImageBitmap(dish.getBitmap());
         holder.item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,22 +92,22 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
 
 
         if(!holder.dish.marked) {
+            final Dialog dialog = new Dialog(activity);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.choose_menu_dialog);
+            TextView title = (TextView) dialog.findViewById(R.id.dialogTitle);
+            title.setText(holder.dish.getName());
             model.fetchIngredients(dish, new AsyncData() {
+
                 @Override
                 public void onData() {
                     model.fetchInstructions(dish, new AsyncData() {
                         @Override
                         public void onData() {
-                            final Dialog dialog = new Dialog(activity);
-                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setContentView(R.layout.choose_menu_dialog);
-
-
                             ((TextView) dialog.findViewById(R.id.itemTitle)).setText(
                                     "Cost: " + (model.getNumberOfGuests() * dish.getCost()) + "\n" + dish.getCost() + " per person"
                             );
-                            ((ImageView) dialog.findViewById(R.id.itemPic)).setImageResource(dish.getImageId());
-
+                            ((ImageView) dialog.findViewById(R.id.itemPic)).setImageBitmap(dish.getBitmap());
 
                             dialog.findViewById(R.id.chooseBtn).setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -105,12 +115,12 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
                                     model.addDishToMenu(holder.dish);
                                     holder.item.setBackgroundColor(activity.getResources().getColor(android.R.color.holo_red_dark));
                                     holder.getTextView().setTextColor(Color.WHITE);
+                                    holder.dish.marked = true;
                                     b.setText("" + (model.getTotalMenuPrice()));
                                     dialog.dismiss();
                                 }
                             });
                             dialog.show();
-
                         }
                     });
                 }
@@ -121,8 +131,6 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
             holder.item.setBackgroundColor(activity.getResources().getColor(android.R.color.white));
             holder.getTextView().setTextColor(Color.BLACK);
             b.setText("" + (model.getTotalMenuPrice()));
-
-
         }
     }
 
