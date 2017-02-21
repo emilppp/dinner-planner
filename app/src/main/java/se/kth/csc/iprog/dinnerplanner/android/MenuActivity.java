@@ -6,13 +6,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+
+import java.util.HashSet;
+import java.util.Set;
 
 import se.kth.csc.iprog.dinnerplanner.model.DinnerModel;
 import se.kth.csc.iprog.dinnerplanner.model.Dish;
@@ -21,6 +27,7 @@ import se.kth.csc.iprog.dinnerplanner.model.Dish;
 public class MenuActivity extends Activity {
 
     DinnerModel model;
+    String searchString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,31 +64,60 @@ public class MenuActivity extends Activity {
         });
 
 
+
         // Listview for the different courses
         RecyclerView recyclerViewStarter = (RecyclerView) findViewById(R.id.recyclerViewStarter);
         RecyclerView recyclerViewMain = (RecyclerView) findViewById(R.id.recyclerViewMainCourse);
         RecyclerView recyclerViewDessert = (RecyclerView) findViewById(R.id.recyclerViewDesserts);
+        RecyclerView recyclerViewSearch = (RecyclerView) findViewById(R.id.recyclerViewSearch);
 
         LinearLayoutManager linearLayoutManagerStarter = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         LinearLayoutManager linearLayoutManagerMain = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         LinearLayoutManager linearLayoutManagerDessert = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager linearLayoutManagerSearch = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
 
         recyclerViewStarter.setLayoutManager(linearLayoutManagerStarter);
         recyclerViewMain.setLayoutManager(linearLayoutManagerMain);
         recyclerViewDessert.setLayoutManager(linearLayoutManagerDessert);
+        recyclerViewSearch.setLayoutManager(linearLayoutManagerSearch);
 
 
         // Use menuadapters f
-        final MenuAdapter starterAdapter = new MenuAdapter(this, getStarters());
-        final MenuAdapter mainAdapter = new MenuAdapter(this, getMain());
-        final MenuAdapter dessertAdapter = new MenuAdapter(this, getDesserts());
+        final MenuAdapter starterAdapter = new MenuAdapter(this, get());
+        final MenuAdapter mainAdapter = new MenuAdapter(this, get());
+        final MenuAdapter dessertAdapter = new MenuAdapter(this, get());
+        final MenuAdapter searchAdapter = new MenuAdapter(this, get());
 
         recyclerViewStarter.setAdapter(starterAdapter);
         recyclerViewMain.setAdapter(mainAdapter);
         recyclerViewDessert.setAdapter(dessertAdapter);
+        recyclerViewSearch.setAdapter(searchAdapter);
 
+        EditText search = (EditText) findViewById(R.id.searchString);
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-        model.setAdapters(starterAdapter, mainAdapter, dessertAdapter);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                searchAdapter.reset();
+                model.loadRecipes(-1, new AsyncData() {
+                    @Override
+                    public void onData() {
+                        
+                    }
+                }, charSequence.toString());
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        model.setAdapters(starterAdapter, mainAdapter, dessertAdapter, searchAdapter);
         model.getRecipiesOfAllTypes(new AsyncData() {
             @Override
             public void onData() {
@@ -102,16 +138,17 @@ public class MenuActivity extends Activity {
 
     }
 
-    private Object[] getStarters() {
-        return model.getDishesOfType(Dish.STARTER).toArray();
-    }
-    private Object[] getMain() {
-        return  model.getDishesOfType(Dish.MAIN).toArray();
-    }
-    private Object[] getDesserts() {
-        return  model.getDishesOfType(Dish.DESERT).toArray();
-    }
 
 
+    private Object[] get() {
+        Set<Dish> result = new HashSet<Dish>();
+        return result.toArray();
+    }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        model.getDishes().clear();
+
+    }
 }

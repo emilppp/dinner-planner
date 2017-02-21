@@ -6,15 +6,21 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import se.kth.csc.iprog.dinnerplanner.model.DinnerModel;
 import se.kth.csc.iprog.dinnerplanner.model.Dish;
@@ -27,6 +33,8 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
 
     private Object[] dataset;
     private Activity activity;
+    private String searchString;
+
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -46,10 +54,14 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
         }
     }
 
+
+
     public MenuAdapter(Activity a, Object[] dataset) {
         this.dataset = dataset;
         this.activity = a;
     }
+
+
 
 
     public void add(Dish a) {
@@ -59,6 +71,9 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
         }
         b[dataset.length] = a;
         dataset = b;
+        if(a.getType() == Dish.STARTER) { activity.findViewById(R.id.progBar1).setVisibility(View.INVISIBLE);}
+        if(a.getType() == Dish.MAIN) { activity.findViewById(R.id.progBar2).setVisibility(View.INVISIBLE);}
+        if(a.getType() == Dish.DESERT) { activity.findViewById(R.id.progBar3).setVisibility(View.INVISIBLE);}
         notifyDataSetChanged();
     }
 
@@ -96,6 +111,7 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.choose_menu_dialog);
             TextView title = (TextView) dialog.findViewById(R.id.dialogTitle);
+            ((ImageView) dialog.findViewById(R.id.itemPic)).setImageBitmap(dish.getBitmap());
             title.setText(holder.dish.getName());
             model.fetchIngredients(dish, new AsyncData() {
 
@@ -107,7 +123,7 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
                             ((TextView) dialog.findViewById(R.id.itemTitle)).setText(
                                     "Cost: " + (model.getNumberOfGuests() * dish.getCost()) + "\n" + dish.getCost() + " per person"
                             );
-                            ((ImageView) dialog.findViewById(R.id.itemPic)).setImageBitmap(dish.getBitmap());
+
 
                             dialog.findViewById(R.id.chooseBtn).setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -135,11 +151,22 @@ public class MenuAdapter extends RecyclerView.Adapter<MenuAdapter.ViewHolder> {
     }
 
 
+
+
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return dataset.length;
     }
 
+
+    private Object[] get() {
+        Set<Dish> result = new HashSet<Dish>();
+        return result.toArray();
+    }
+
+    public void reset() {
+        dataset = get();
+    }
 }
 

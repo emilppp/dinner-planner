@@ -25,7 +25,7 @@ public class DinnerModel implements IDinnerModel{
 	
 	int numOfGuests = 0;
 	Set<Dish> dishes = new HashSet<Dish>();
-	MenuAdapter a, b, c;
+	MenuAdapter a, b, c, d;
 	/**
 	 * TODO: For Lab2 you need to implement the IDinnerModel interface.
 	 * When you do this you will have all the needed fields and methods
@@ -252,6 +252,7 @@ public class DinnerModel implements IDinnerModel{
 			if(dish.getType() == Dish.STARTER && a != null) a.add(dish);
 			if(dish.getType() == Dish.MAIN && b != null) b.add(dish);
 			if(dish.getType() == Dish.DESERT && c != null) c.add(dish);
+			if(dish.getType() == -1 && d != null) d.add(dish);
 
 			data.onData();
 
@@ -259,29 +260,28 @@ public class DinnerModel implements IDinnerModel{
 	}
 
 	// 1-3
-	public void loadRecipes(final int type, final AsyncData data) {
-
+	public void loadRecipes(final int type, final AsyncData data, String query) {
 		String typ;
 		if(type == 1) {
 			typ = "appetizer";
 		} else if (type == 2) {
 			typ = "main course";
-		} else {
+		} else if (type == 3) {
 			typ = "dessert";
+		} else {
+			typ = "";
 		}
-		SpoonacularAPIClient.get("recipes/search?type="+typ+"&number=2", null, new JsonHttpResponseHandler() {
+		SpoonacularAPIClient.get("recipes/search?type="+typ+"&number=6"+"&query="+query, null, new JsonHttpResponseHandler() {
 			@Override
 			public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, JSONObject response) {
 				super.onSuccess(statusCode, headers, response);
-				System.out.println(response);
 				try {
 					String imgURL = response.getString("baseUri");
 					JSONArray recipes = response.getJSONArray("results");
 					for(int i = 0; i < recipes.length(); i++) {
 						JSONObject obj = recipes.getJSONObject(i);
-						Dish dish = new Dish(obj.getString("title"), type, imgURL + obj.getString("image"), "apa", R.drawable.toast, obj.getString("id"));
+						Dish dish = new Dish(obj.getString("title"), type, imgURL + obj.getString("image"), "", R.drawable.toast, obj.getString("id"));
 						new DownloadImageTask(dish, data).execute(dish.getImage());
-
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -299,28 +299,43 @@ public class DinnerModel implements IDinnerModel{
 	}
 
 	public void getRecipiesOfAllTypes(final AsyncData data) {
-		loadRecipes(1, new AsyncData() {
+		loadRecipes(1,  new AsyncData() {
 			@Override
 			public void onData() {
-				loadRecipes(2, new AsyncData() {
-					@Override
-					public void onData() {
-						loadRecipes(3, new AsyncData() {
-							@Override
-							public void onData() {
-								data.onData();
 
-							}
-						});
-					}
-				});
 			}
-		});
+		}, "");
+
+		loadRecipes(2, new AsyncData() {
+			@Override
+			public void onData() {
+
+			}
+		}, "");
+
+		loadRecipes(3, new AsyncData() {
+			@Override
+			public void onData() {
+				data.onData();
+			}
+		}, "");
+
+		loadRecipes(-1, new AsyncData() {
+			@Override
+			public void onData() {
+
+			}
+		}, "");
 	}
 
-	public void setAdapters(MenuAdapter a, MenuAdapter b, MenuAdapter c) {
+	public void setAdapters(MenuAdapter a, MenuAdapter b, MenuAdapter c, MenuAdapter d) {
 		this.a = a;
 		this.b = b;
 		this.c = c;
+		this.d = d;
+	}
+
+	public void reset() {
+		this.dishes.clear();
 	}
 }
